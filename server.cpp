@@ -5,7 +5,7 @@
 
 using namespace tram;
 
-Server::Server(const std::string& port) : m_socket(Socket(AF_INET, SOCK_STREAM, 0)) {
+Server::Server(const std::string& port) : m_socket(AF_INET, SOCK_STREAM, 0) {
   struct sockaddr_in address_struct;
   bzero((char *) &address_struct, sizeof(address_struct));
   address_struct.sin_family = AF_INET;
@@ -30,5 +30,5 @@ Client Server::acc() {
     throw std::runtime_error("Failed to accept connection");
   }
 
-  return Client(Socket(client_socket));
+  return Client(client_socket);
 }

@@ -10,7 +10,6 @@
 namespace tram {
 class Server {
   const Socket m_socket;
-  std::vector<std::unique_ptr<Socket>> connections;
 public:
   Server(const std::string& port);
   Client acc();

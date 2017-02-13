@@ -10,6 +10,8 @@ class Socket {
 public:
   Socket(int domain, int type, int protocol = 0);
   Socket(int socket_desc);
+  Socket(const Socket& other) = delete;
+  Socket(Socket& other) = delete;
   operator int() const { return m_socket_desc; }
   ~Socket();
 };
