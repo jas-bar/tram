@@ -12,6 +12,8 @@ class Server {
   const Socket m_socket;
 public:
   Server(const std::string& port);
+  Server(const Server& other) = delete;
+  Server(Server& other) = delete;
   Client acc();
 };
 }

@@ -6,6 +6,8 @@
 
 using namespace tram;
 
+Client::Client(int socket_desc) : m_socket_ptr(std::make_shared<Socket>(socket_desc)) {}
+
 Client::Client(const std::string& address, const std::string& port) : m_socket_ptr(std::make_shared<Socket>(AF_INET, SOCK_STREAM, 0)) {
   struct addrinfo *address_struct;
   getaddrinfo(address.c_str(), port.c_str(), 0, &address_struct);
@@ -23,8 +25,19 @@ void Client::write(const char* data, const size_t& length) {
   }
 }
 
-void Client::operator<<(const std::string& data) {
+Client& Client::operator<<(const std::string& data) {
   write(data.c_str(), data.length());
+  return *this;
+}
+
+Client& Client::operator>>(std::string& result) {
+  result = read_str();
+  return *this;
+}
+
+std::string Client::read_str() {
+  std::vector<char> str_vector = read();
+  return std::string(str_vector.begin(), str_vector.end());
 }
 
 std::vector<char> Client::read() {

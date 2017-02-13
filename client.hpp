@@ -10,12 +10,14 @@ namespace tram {
 class Client {
   friend class Server;
   std::shared_ptr<Socket> m_socket_ptr;
-  Client(int socket_desc) : m_socket_ptr(std::make_shared<Socket>(socket_desc)) {}
+  Client(int socket_desc);
 public:
   Client(const std::string& address, const std::string& port);
   void write(const char* data, const size_t& length);
-  void operator<<(const std::string& data);
+  Client& operator<<(const std::string& data);
+  Client& operator>>(std::string& result);
   std::vector<char> read();
+  std::string read_str();
 };
 }
 
