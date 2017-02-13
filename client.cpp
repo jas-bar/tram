@@ -1,10 +1,5 @@
 #include "client.hpp"
 #include <netdb.h>
-#include <sys/socket.h>
-#include <sys/ioctl.h>
-#include <stdexcept>
-#include <cstring>
-#include <cerrno>
 
 using namespace tram;
 
@@ -21,14 +16,8 @@ Client::Client(const std::string& address, const std::string& port) : m_socket_p
   freeaddrinfo(address_struct);
 }
 
-void Client::write(const char* data, const size_t& length) {
-  if (send(*m_socket_ptr, data, length, 0) == -1) {
-    throw std::runtime_error(strerror(errno));
-  }
-}
-
 Client& Client::operator<<(const std::string& data) {
-  write(data.c_str(), data.length());
+  write(data);
   return *this;
 }
 
@@ -37,20 +26,7 @@ Client& Client::operator>>(std::string& result) {
   return *this;
 }
 
-std::string Client::read_str() {
-  std::vector<char> str_vector = read();
+std::string Client::read_str() const {
+  std::vector<char> str_vector = read<char>();
   return std::string(str_vector.begin(), str_vector.end());
-}
-
-std::vector<char> Client::read() {
-  int len = 0;
-  ioctl(*m_socket_ptr, FIONREAD, &len);
-  if (len == 0) {
-    return std::vector<char>();
-  }
-  std::vector<char> result(len);
-  if (recv(*m_socket_ptr, result.data(), len, 0) == -1) {
-    throw std::runtime_error(strerror(errno));
-  }
-  return result;
 }

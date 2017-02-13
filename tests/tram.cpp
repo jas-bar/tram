@@ -1,5 +1,6 @@
 #include "../tram.hpp"
 #include <gtest/gtest.h>
+#include <vector>
 
 TEST(tram, connect) {
     tram::Server server("10000");
@@ -12,10 +13,35 @@ TEST(tram, accept) {
     tram::Client conn = server.acc();
 }
 
-TEST(tram, sendAndReceive) {
+TEST(tram, sendAndReceiveStr) {
     tram::Server server("10002");
     tram::Client client("127.0.0.1", "10002");
     tram::Client conn = server.acc();
     conn << "Hi world!";
     ASSERT_EQ("Hi world!", client.read_str());
+}
+
+TEST(tram, sendAndReceiveCStr) {
+    tram::Server server("10003");
+    tram::Client client("127.0.0.1", "10003");
+    tram::Client conn = server.acc();
+    conn.write("Ahoj", 4);
+    ASSERT_EQ("Ahoj", client.read_str());
+}
+
+TEST(tram, sendAndReceiveChar) {
+    tram::Server server("10004");
+    tram::Client client("127.0.0.1", "10004");
+    tram::Client conn = server.acc();
+    conn.write(std::string("Hi"));
+    ASSERT_EQ(2, client.read<char>().size());
+}
+
+TEST(tram, sendAndReceiveInt) {
+    tram::Server server("10005");
+    tram::Client client("127.0.0.1", "10005");
+    tram::Client conn = server.acc();
+    int numbers[] = {1, 2, 3, 4};
+    conn.write(numbers);
+    ASSERT_EQ(4, client.read<int>().size());
 }
