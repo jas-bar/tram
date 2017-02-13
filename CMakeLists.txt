@@ -8,3 +8,7 @@ add_library(tram ${SOURCES})
 
 add_executable(tram-cli main.cpp)
 target_link_libraries(tram-cli tram)
+
+file(GLOB TEST_SOURCES tests/*.hpp tests/*.cpp)
+add_executable(tram-tests ${TEST_SOURCES})
+target_link_libraries(tram-tests gtest gtest_main tram)
