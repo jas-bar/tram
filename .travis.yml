@@ -1,0 +1,16 @@
+language: cpp
+sudo: false
+compiler:
+- clang
+- gcc
+os:
+- linux
+branches:
+    only:
+        - master
+script: 
+    - mkdir build
+    - cd build
+    - cmake ..
+    - make
+    - ./tram-tests
