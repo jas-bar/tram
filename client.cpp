@@ -3,6 +3,8 @@
 #include <sys/socket.h>
 #include <sys/ioctl.h>
 #include <stdexcept>
+#include <cstring>
+#include <cerrno>
 
 using namespace tram;
 
@@ -11,7 +13,7 @@ Client::Client(const std::string& address, const std::string& port) : m_socket_p
   getaddrinfo(address.c_str(), port.c_str(), 0, &address_struct);
   if (connect(*m_socket_ptr, address_struct->ai_addr, address_struct->ai_addrlen) == -1) {
     freeaddrinfo(address_struct);
-    throw std::runtime_error("Failed to connect");
+    throw std::runtime_error(strerror(errno));
   }
 
   freeaddrinfo(address_struct);
@@ -19,7 +21,7 @@ Client::Client(const std::string& address, const std::string& port) : m_socket_p
 
 void Client::write(const char* data, const size_t& length) {
   if (send(*m_socket_ptr, data, length, 0) == -1) {
-    throw std::runtime_error("Failed to send data");
+    throw std::runtime_error(strerror(errno));
   }
 }
 
@@ -35,7 +37,7 @@ std::vector<char> Client::read() {
   }
   std::vector<char> result(len);
   if (recv(*m_socket_ptr, result.data(), len, 0) == -1) {
-    throw std::runtime_error("Failed to recieve data");
+    throw std::runtime_error(strerror(errno));
   }
   return result;
 }
