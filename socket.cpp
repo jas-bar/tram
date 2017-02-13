@@ -1,7 +1,6 @@
 #include "socket.hpp"
 #include <unistd.h>
 #include <stdexcept>
-#include <iostream>
 
 using namespace tram;
 
@@ -15,6 +14,5 @@ Socket::Socket(int socket_desc) : m_socket_desc(socket_desc) {
 }
 
 Socket::~Socket() {
-  std::cout << "Destroying socket " << m_socket_desc << std::endl;
   close(m_socket_desc);
 }
