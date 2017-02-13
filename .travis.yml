@@ -1,16 +1,30 @@
-language: cpp
-sudo: false
+dist: trusty
+sudo: required
+language:
+  - cpp
 compiler:
-- clang
-- gcc
-os:
-- linux
-branches:
-    only:
-        - master
-script: 
-    - mkdir build
-    - cd build
-    - cmake ..
-    - make
-    - ./tram-tests
+  - gcc
+addons:
+  apt:
+    sources:
+      - ubuntu-toolchain-r-test
+    packages:
+      - gcc-6
+      - g++-6
+      - cmake
+before_install:
+  - sudo apt-get update
+  - sudo apt-get install libgtest-dev
+  - "cd /usr/src/gtest && sudo cmake . && sudo cmake --build . && sudo mv libg* /usr/local/lib/ ; cd -"
+script:
+  # Export CC and CXX to tell cmake which compiler to use
+  - export CC=/usr/bin/gcc-6
+  - export CXX=/usr/bin/g++-6
+  # Check versions of gcc, g++ and cmake
+  - gcc -v && g++ -v && cmake --version
+  # Run your build commands next
+  - mkdir build
+  - cd build
+  - cmake ..
+  - make
+  - ./tram-tests
