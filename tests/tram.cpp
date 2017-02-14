@@ -45,3 +45,13 @@ TEST(tram, sendAndReceiveInt) {
     conn.write(numbers);
     ASSERT_EQ(4, client.read<int>().size());
 }
+
+TEST(tram, sendAndReceiveVector) {
+    tram::Server server("10006");
+    tram::Client client("127.0.0.1", "10006");
+    tram::Client conn = server.acc();
+    std::vector<uint32_t> numbers {1, 2, 3, 4};
+    conn.write(numbers);
+    std::vector<uint32_t> recv = client.read<uint32_t>();
+    ASSERT_EQ(numbers, recv);
+}
