@@ -15,18 +15,3 @@ Client::Client(const std::string& address, const std::string& port) : m_socket_p
 
   freeaddrinfo(address_struct);
 }
-
-Client& Client::operator<<(const std::string& data) {
-  write(data);
-  return *this;
-}
-
-Client& Client::operator>>(std::string& result) {
-  result = read_str();
-  return *this;
-}
-
-std::string Client::read_str() const {
-  std::vector<char> str_vector = read<char>();
-  return std::string(str_vector.begin(), str_vector.end());
-}
