@@ -29,8 +29,8 @@ public:
     if (len == 0) {
       return std::vector<T>();
     }
-    std::vector<T> result(len);
-    if (recv(*m_socket_ptr,(char *) result.data(), len, 0) == -1) {
+    std::vector<T> result(len / sizeof(T));
+    if (recv(*m_socket_ptr, result.data(), len, 0) == -1) {
       throw std::runtime_error(strerror(errno));
     }
     return result;
@@ -38,14 +38,18 @@ public:
 
   template<typename T>
   void write(const T& data, size_t length) {
-    if (send(*m_socket_ptr, data, length, 0) == -1) {
+    if (send(*m_socket_ptr, data, length * sizeof(*data), 0) == -1) {
       throw std::runtime_error(strerror(errno));
     }
   }
 
-  template<class T>
-  void write(const T& data) {
+  template<typename T>
+  void write(const std::vector<T>& data) {
     write(data.data(), data.size()); 
+  }
+
+  void write(const std::string& data) {
+    write(data.data(), data.length()); 
   }
 
   template<typename T, size_t N>
