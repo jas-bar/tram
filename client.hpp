@@ -18,22 +18,32 @@ class Client {
   Client(int socket_desc);
 public:
   Client(const std::string& address, const std::string& port);
-  Client& operator<<(const std::string& data);
-  Client& operator>>(std::string& result);
-  std::string read_str() const;
 
   template<typename T>
-  std::vector<T> read() const {
+  friend Client& operator>>(Client& client, std::vector<T>& result) {
     int len = 0;
-    ioctl(*m_socket_ptr, FIONREAD, &len);
-    if (len == 0) {
-      return std::vector<T>();
-    }
-    std::vector<T> result(len / sizeof(T));
-    if (recv(*m_socket_ptr, result.data(), len, 0) == -1) {
+    ioctl(*client.m_socket_ptr, FIONREAD, &len);
+    result.clear();
+    result.resize(len / sizeof(T));
+    if (recv(*client.m_socket_ptr, result.data(), len, 0) == -1) {
       throw std::runtime_error(strerror(errno));
     }
-    return result;
+    return client;
+  }
+  template <typename T>
+  friend Client& operator>>(Client& client, T& result) {
+    if (recv(*client.m_socket_ptr, result, sizeof(*result), 0) == -1) {
+      throw std::runtime_error(strerror(errno));
+    }
+    return client;
+  }
+
+  friend Client& operator>>(Client& client, std::string& result) {
+    result.clear();
+    std::vector<char> temp;
+    client >> temp;
+    result = temp.data();
+    return client;
   }
 
   template<typename T>
@@ -44,17 +54,32 @@ public:
   }
 
   template<typename T>
-  void write(const std::vector<T>& data) {
-    write(data.data(), data.size()); 
+  friend Client& operator<<(Client& client, const T& data) {
+      client.write(data, sizeof(*data)); 
+      return client;
   }
 
-  void write(const std::string& data) {
-    write(data.data(), data.length()); 
+  template<typename T>
+  friend Client& operator<<(Client& client, const std::vector<T>& data) {
+      client.write(data.data(), data.size()); 
+      return client;
+  }
+
+
+  friend Client& operator<<(Client& client, const std::string& data) {
+    client.write(data.c_str(), data.length() + 1); 
+    return client;
+  }
+
+  friend Client& operator<<(Client& client, const char *const data) {
+    client.write(data, strlen(data) + 1);
+    return client;
   }
 
   template<typename T, size_t N>
-  void write(T const (&data)[N]) {
-    write(data, N);
+  friend Client& operator<<(Client& client, T const (&data)[N]) {
+    client.write(data, N);
+    return client;
   }
 };
 }
