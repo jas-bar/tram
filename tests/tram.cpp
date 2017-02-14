@@ -64,6 +64,10 @@ TEST(tram, sendAndReceiveLongLongArray) {
     conn.write(numbers);
     std::vector<long long> recv = client.read<long long>();
     ASSERT_EQ(4, recv.size());
+    ASSERT_EQ(1, recv[0]);
+    ASSERT_EQ(2, recv[1]);
+    ASSERT_EQ(3, recv[2]);
+    ASSERT_EQ(4, recv[3]);
 }
 
 TEST(tram, sendAndReceiveLongLongVector) {
