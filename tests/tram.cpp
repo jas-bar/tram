@@ -46,7 +46,7 @@ TEST(tram, sendAndReceiveInt) {
     ASSERT_EQ(4, client.read<int>().size());
 }
 
-TEST(tram, sendAndReceiveVector) {
+TEST(tram, sendAndReceiveUInt32Vector) {
     tram::Server server("10006");
     tram::Client client("127.0.0.1", "10006");
     tram::Client conn = server.acc();
@@ -54,4 +54,40 @@ TEST(tram, sendAndReceiveVector) {
     conn.write(numbers);
     std::vector<uint32_t> recv = client.read<uint32_t>();
     ASSERT_EQ(numbers, recv);
+}
+
+TEST(tram, sendAndReceiveLongLongArray) {
+    tram::Server server("10007");
+    tram::Client client("127.0.0.1", "10007");
+    tram::Client conn = server.acc();
+    long long numbers[] = {1, 2, 3, 4};
+    conn.write(numbers);
+    std::vector<long long> recv = client.read<long long>();
+    ASSERT_EQ(4, recv.size());
+}
+
+TEST(tram, sendAndReceiveLongLongVector) {
+    tram::Server server("10008");
+    tram::Client client("127.0.0.1", "10008");
+    tram::Client conn = server.acc();
+    std::vector<long long> numbers {1, 2, 3, 4};
+    conn.write(numbers);
+    std::vector<long long> recv = client.read<long long>();
+    ASSERT_EQ(numbers, recv);
+}
+
+struct TestStruct1 {
+    int n;
+    char c;
+};
+
+TEST(tram, sendAndReceiveStruct) {
+    tram::Server server("10009");
+    tram::Client client("127.0.0.1", "10009");
+    tram::Client conn = server.acc();
+    TestStruct1 ts {42, 'a'};
+    conn.write(&ts, 1);
+    std::vector<TestStruct1> recv = client.read<TestStruct1>();
+    ASSERT_EQ(ts.n, recv[0].n);
+    ASSERT_EQ(ts.c, recv[0].c);
 }
