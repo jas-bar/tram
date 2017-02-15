@@ -15,3 +15,18 @@ if(BUILD_TESTS)
   add_executable(tram-tests ${TEST_SOURCES})
   target_link_libraries(tram-tests gtest gtest_main pthread tram)
 endif()
+
+# pkg-config installation
+set(PKGCONFIG_DIR "/usr/lib/pkgconfig")
+# get latest git commit in the working directory
+execute_process(
+    COMMAND git log -1 --format=%h
+    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+    OUTPUT_VARIABLE GIT_COMMIT_HASH
+    OUTPUT_STRIP_TRAILING_WHITESPACE
+    )
+install(TARGETS tram DESTINATION /usr/lib)
+file(GLOB HEADERS . "*.hpp")
+install(FILES ${HEADERS} DESTINATION ${CMAKE_INSTALL_PREFIX}/include/tram/)
+configure_file(tram.pc.in tram.pc @ONLY)
+install(FILES tram.pc DESTINATION ${PKGCONFIG_DIR})

@@ -1,0 +1,10 @@
+prefix=@CMAKE_INSTALL_PREFIX@/
+exec_prefix=${prefix}
+includedir=${prefix}/include
+libdir=${exec_prefix}/lib
+
+Name: tram
+Description: Tram C++ networking library
+Version: git-@GIT_COMMIT_HASH@
+Cflags: -I${includedir}
+Libs: -L${libdir} -ltram
