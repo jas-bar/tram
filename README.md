@@ -42,9 +42,25 @@ tram uses familiar stream-like interface for sockets.
 ```
 
 # Using tram in your projects
+Tram can install to `/usr/include` and `/usr/lib` directories. It also installs a `.pc` file to be usable with [pkgconfig](https://people.freedesktop.org/~dbn/pkg-config-guide.html#using) tool. It is, however, **not** required to use pkgconfig to link against tram.
+```
+$ git clone https://github.com/jas-bar/tram
+$ cd tram
+$ cmake .
+$ make
+$ sudo make install
+```
 
-At the moment, you have to setup includes and linking yourself.
-We are working on a better way to use tram via pkgconfig.
+Tram should now be available to you via pkgconfig.
+If you are using CMake to build your project, you add this snippet to your `CMakeLists.txt`:
+```
+include(FindPkgConfig)
+pkg_search_module(TRAM REQUIRED tram)
+```
+After this, `${TRAM_LIBRARIES}` and `${TRAM_INCLUDE_DIRS}` variables are defined, which can be utilized with `target_link_libraries` and `include_directories` respectively.
+If everything is setup right, use `#include <tram/tram.hpp>` in your sources and you're ready to start coding.
+
+For more information about this process, see pull request #12.
 
 # Licensing
 
